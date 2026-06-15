@@ -83,7 +83,7 @@ PREGUNTAS FRECUENTES — responde sin necesitar vendedor:
 - Dirección: Gobernador Curiel 2778, Zona Industrial
 
 REGLAS:
-- Usa negritas para lo importante
+- Usa *negritas* para lo importante
 - Mensajes cortos, estilo WhatsApp
 - Español mexicano natural y cordial
 - No des precios nunca`;
@@ -99,7 +99,7 @@ app.get("/webhook", (req, res) => {
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    console.log("✅ Webhook verificado");
+    console.log("Webhook verificado");
     res.status(200).send(challenge);
   } else {
     res.sendStatus(403);
@@ -118,7 +118,7 @@ app.post("/webhook", async (req, res) => {
     const text = message.text?.body;
     if (!text) return;
 
-    console.log(📩 Mensaje de ${from}: ${text});
+    console.log(`Mensaje de ${from}: ${text}`);
 
     if (!conversaciones[from]) conversaciones[from] = [];
     conversaciones[from].push({ role: "user", content: text });
@@ -160,14 +160,14 @@ app.post("/webhook", async (req, res) => {
     }
 
   } catch (error) {
-    console.error("❌ Error:", error.response?.data || error.message);
+    console.error("Error:", error.response?.data || error.message);
   }
 });
 
 // ========== ENVIAR MENSAJE DE WHATSAPP ==========
 async function sendWhatsApp(to, message) {
   await axios.post(
-    https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages,
+    `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     {
       messaging_product: "whatsapp",
       to: to,
@@ -176,24 +176,24 @@ async function sendWhatsApp(to, message) {
     },
     {
       headers: {
-        Authorization: Bearer ${WHATSAPP_TOKEN},
+        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
         "Content-Type": "application/json"
       }
     }
   );
-  console.log(✅ Respuesta enviada a ${to});
+  console.log(`Respuesta enviada a ${to}`);
 }
 
 // ========== NOTIFICAR A VENDEDORAS ==========
 async function notificarVendedoras(clienteNumero, leadData) {
-  const mensaje = 🔔 *NUEVO LEAD - Sabrox's*\n\n📋 *Datos del cliente:*\n${leadData}\n\n📱 *Número del cliente:* +${clienteNumero}\n\n⚡ Contáctalo para enviarle la cotización formal.;
+  const mensaje = `🔔 *NUEVO LEAD - Sabrox's*\n\n📋 *Datos del cliente:*\n${leadData}\n\n📱 *Número del cliente:* +${clienteNumero}\n\n⚡ Contáctalo para enviarle la cotización formal.`;
 
   for (const vendedora of VENDEDORAS) {
     try {
       await sendWhatsApp(vendedora.numero, mensaje);
-      console.log(✅ Notificación enviada a ${vendedora.nombre});
+      console.log(`Notificacion enviada a ${vendedora.nombre}`);
     } catch (error) {
-      console.error(❌ Error notificando a ${vendedora.nombre}:, error.message);
+      console.error(`❌ Error notificando a ${vendedora.nombre}:`, error.message);
     }
   }
 }
@@ -213,7 +213,7 @@ function guardarCliente(numero, leadData) {
     fecha: new Date().toISOString(),
     ultimoContacto: new Date().toISOString()
   };
-  console.log(💾 Cliente guardado: ${data.EMPRESA || numero});
+  console.log(`Cliente guardado: ${data.EMPRESA || numero}`);
 }
 
 // ========== REPORTE SEMANAL ==========
@@ -230,7 +230,7 @@ app.get("/reporte", (req, res) => {
   const topProducto = Object.entries(productos).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
   res.json({
-    reporte: "Reporte Semanal Sabrox's",
+    reporte: "Reporte Semanal Sabroxs",
     total_leads: total,
     alto_volumen: alto,
     medio_volumen: medio,
@@ -245,6 +245,6 @@ app.get("/clientes", (req, res) => {
   res.json(Object.values(clientes));
 });
 
-app.get("/", (req, res) => res.send("🍬 Bot Sabrox's funcionando OK"));
+app.get("/", (req, res) => res.send("Bot Sabroxs funcionando OK"));
 
-app.listen(PORT, "0.0.0.0", () => console.log(🚀 Servidor en puerto ${PORT}));
+app.listen(PORT, "0.0.0.0", () => console.log(`Servidor en puerto ${PORT}`));
